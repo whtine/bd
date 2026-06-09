@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>С Днём Рождения, Любимая ♡</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        :root {
+            --cream: #fdf6ee;
+            --warm: #f5e6d3;
+            --blush: #e8c4b0;
+            --rose: #c97b6a;
+            --deep: #7a3f35;
+            --ink: #2e1a18;
+            --gold: #c9a96e;
+            --gold-lt: #e8d5ae;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            overflow-x: hidden;
+            /* Предотвращаем горизонтальный скролл на мобильных */
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.35;
+        }
+
+        h1,
+        h2,
+        h3,
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.9s cubic-bezier(.22, 1, .36, 1), transform 0.9s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ═══ HERO ═══ */
+        #hero {
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 0%, #f0ddd0 0%, transparent 70%),
+                radial-gradient(ellipse 60% 80% at 80% 100%, #e8d5c4 0%, transparent 60%),
+                var(--cream);
+        }
+
+        #hero::after {
+            content: '✦';
+            font-size: clamp(160px, 40vw, 320px);
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            color: var(--blush);
+            opacity: 0.18;
+            pointer-events: none;
+            line-height: 1;
+            animation: slowSpin 40s linear infinite;
+        }
+
+        @keyframes slowSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Декоративные фото — скрываем на маленьких экранах */
+        .hero-photo-left,
+        .hero-photo-right {
+            position: absolute;
+            border: 1px solid var(--blush);
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(122, 63, 53, 0.12);
+            animation: fadeUp 1.2s 0.8s both;
+        }
+
+        .hero-photo-left {
+            width: clamp(90px, 12vw, 160px);
+            height: clamp(120px, 16vw, 220px);
+            left: clamp(0.5rem, 3vw, 6rem);
+            top: 50%;
+            transform: translateY(-60%) rotate(-4deg);
+            border-radius: 2px;
+        }
+
+        .hero-photo-right {
+            width: clamp(80px, 10vw, 130px);
+            height: clamp(100px, 13vw, 180px);
+            right: clamp(0.5rem, 3vw, 6rem);
+            top: 50%;
+            transform: translateY(-30%) rotate(5deg);
+            border-radius: 2px;
+        }
+
+        /* На очень маленьких — скрываем боковые фото */
+        @media (max-width: 480px) {
+
+            .hero-photo-left,
+            .hero-photo-right {
+                display: none;
+            }
+        }
+
+        .hero-photo-left img,
+        .hero-photo-right img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-photo-left .ph,
+        .hero-photo-right .ph {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--warm), var(--blush));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            opacity: 0.5;
+        }
+
+        .hero-label {
+            font-size: clamp(0.6rem, 2vw, 0.7rem);
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--rose);
+            margin-bottom: 1.6rem;
+            animation: fadeUp 1s 0.2s both;
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.8rem, 12vw, 7.5rem);
+            font-weight: 300;
+            line-height: 1.05;
+            color: var(--ink);
+            animation: fadeUp 1s 0.4s both;
+            /* Ограничиваем ширину чтобы не налезало на боковые фото */
+            max-width: min(480px, 60vw);
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                max-width: 100%;
+            }
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--rose);
+        }
+
+        .hero-sub {
+            margin-top: 1.4rem;
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+            font-weight: 300;
+            color: var(--deep);
+            max-width: min(480px, 90vw);
+            line-height: 1.8;
+            animation: fadeUp 1s 0.6s both;
+        }
+
+        .hero-divider {
+            margin: 2.4rem auto;
+            width: 80px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            animation: fadeUp 1s 0.8s both;
+        }
+
+        .scroll-hint {
+            margin-top: 3rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--blush);
+            animation: fadeUp 1s 1s both, bounce 2.5s 2s infinite;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(8px);
+            }
+        }
+
+        /* ═══ СЕКЦИИ ═══ */
+        .section {
+            padding: clamp(3rem, 8vw, 8rem) clamp(1rem, 5vw, 5rem);
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 0.6rem;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 5vw, 3.4rem);
+            font-weight: 300;
+            line-height: 1.15;
+            color: var(--ink);
+            margin-bottom: 2rem;
+        }
+
+        .section-title em {
+            font-style: italic;
+            color: var(--rose);
+        }
+
+        .line {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, var(--blush), transparent);
+            margin: 4rem 0;
+        }
+
+        /* ═══ СЧЁТЧИК ═══ */
+        #counter-section {
+            background:
+                radial-gradient(ellipse 100% 80% at 50% 50%, #f5ece3 0%, transparent 80%),
+                var(--cream);
+            padding: clamp(3rem, 8vw, 7rem) clamp(1rem, 5vw, 5rem);
+        }
+
+        .counter-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(0.6rem, 2vw, 2rem);
+            margin-top: 2.5rem;
+        }
+
+        @media (max-width: 380px) {
+            .counter-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .counter-card {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--gold-lt);
+            border-radius: 2px;
+            padding: clamp(1rem, 4vw, 2rem) clamp(0.5rem, 2vw, 1rem);
+            backdrop-filter: blur(8px);
+            transition: transform 0.4s cubic-bezier(.22, 1, .36, 1), box-shadow 0.4s;
+        }
+
+        @media (hover: hover) {
+            .counter-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 16px 40px rgba(122, 63, 53, 0.1);
+            }
+        }
+
+        .counter-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 6vw, 3.8rem);
+            font-weight: 300;
+            color: var(--rose);
+            line-height: 1;
+        }
+
+        .counter-unit {
+            font-size: clamp(0.55rem, 1.5vw, 0.65rem);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--deep);
+            margin-top: 0.4rem;
+        }
+
+        /* ═══ СТАТИСТИКА ═══ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+            gap: 1.2rem;
+            margin-top: 2.5rem;
+        }
+
+        .stat-item {
+            border-left: 2px solid var(--blush);
+            padding: 0.8rem 1.2rem;
+            transition: border-color 0.3s;
+        }
+
+        .stat-item:hover {
+            border-color: var(--rose);
+        }
+
+        .stat-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 300;
+            color: var(--rose);
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-size: clamp(0.7rem, 2vw, 0.75rem);
+            letter-spacing: 0.1em;
+            color: var(--deep);
+            margin-top: 0.3rem;
+            font-weight: 300;
+        }
+
+        /* ═══ ТАЙМЛАЙН ═══ */
+        .timeline {
+            position: relative;
+            margin-top: 2.5rem;
+            padding-left: clamp(28px, 6vw, 48px);
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 12px;
+            bottom: 12px;
+            width: 1px;
+            background: linear-gradient(180deg, transparent 0%, var(--blush) 10%, var(--blush) 90%, transparent 100%);
+        }
+
+        .tl-item {
+            position: relative;
+            margin-bottom: 2.2rem;
+        }
+
+        .tl-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .tl-dot {
+            position: absolute;
+            left: clamp(-28px, -6vw, -44px);
+            top: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--rose);
+            background: var(--cream);
+            transition: background 0.3s, transform 0.3s;
+            z-index: 1;
+        }
+
+        .tl-dot::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            background: var(--rose);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tl-item:hover .tl-dot {
+            transform: scale(1.25);
+        }
+
+        .tl-item:hover .tl-dot::after {
+            opacity: 1;
+        }
+
+        .tl-content {
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid var(--gold-lt);
+            border-radius: 2px;
+            padding: clamp(1rem, 3vw, 1.4rem) clamp(1rem, 3vw, 1.6rem);
+            transition: box-shadow 0.4s, transform 0.4s cubic-bezier(.22, 1, .36, 1);
+            backdrop-filter: blur(6px);
+        }
+
+        @media (hover: hover) {
+            .tl-item:hover .tl-content {
+                box-shadow: 0 10px 32px rgba(122, 63, 53, 0.08);
+                transform: translateX(4px);
+            }
+        }
+
+        .tl-date {
+            font-size: clamp(0.58rem, 1.5vw, 0.62rem);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 0.35rem;
+        }
+
+        .tl-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
+            font-weight: 400;
+            color: var(--ink);
+            margin-bottom: 0.4rem;
+        }
+
+        .tl-text {
+            font-size: clamp(0.8rem, 2vw, 0.85rem);
+            color: var(--deep);
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* ═══ КАРТА LEAFLET ═══ */
+        .map-wrap {
+            margin-top: 2rem;
+            border-radius: 2px;
+            overflow: hidden;
+            border: 1px solid var(--blush);
+        }
+
+        #leaflet-map {
+            width: 100%;
+            height: clamp(280px, 50vw, 480px);
+        }
+
+        .leaflet-container {
+            background: #f0e4d8;
+        }
+
+        .leaflet-popup-content-wrapper {
+            background: #fff8f2 !important;
+            border: 1px solid var(--blush) !important;
+            border-radius: 2px !important;
+            box-shadow: 0 8px 24px rgba(122, 63, 53, 0.12) !important;
+        }
+
+        .leaflet-popup-tip {
+            background: #fff8f2 !important;
+        }
+
+        .leaflet-popup-content {
+            margin: 14px 18px;
+        }
+
+        .popup-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            color: #2e1a18;
+            margin-bottom: 4px;
+        }
+
+        .popup-desc {
+            font-size: 0.78rem;
+            color: #7a3f35;
+            line-height: 1.6;
+        }
+
+        /* Пины карты — скролл на мобильных */
+        .map-pins {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+        }
+
+        .pin {
+            background: white;
+            border: 1px solid var(--blush);
+            border-radius: 2px;
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: clamp(0.72rem, 2vw, 0.8rem);
+            color: var(--deep);
+            transition: border-color 0.25s, transform 0.25s;
+            cursor: pointer;
+            /* Touch-friendly размер */
+            min-height: 40px;
+        }
+
+        @media (hover: hover) {
+            .pin:hover {
+                border-color: var(--rose);
+                transform: translateY(-2px);
+            }
+        }
+
+        .pin-emoji {
+            font-size: 1rem;
+        }
+
+        .pin-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+
+        /* ═══ ФОТОГРАФИИ ═══ */
+        .photo-masonry {
+            margin-top: 2rem;
+            columns: 3;
+            column-gap: 0.75rem;
+        }
+
+        @media (max-width: 700px) {
+            .photo-masonry {
+                columns: 2;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .photo-masonry {
+                columns: 1;
+            }
+        }
+
+        .photo-item {
+            break-inside: avoid;
+            margin-bottom: 0.75rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--blush);
+            border-radius: 2px;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(.22, 1, .36, 1), box-shadow 0.4s;
+        }
+
+        @media (hover: hover) {
+            .photo-item:hover {
+                transform: translateY(-4px) scale(1.01);
+                box-shadow: 0 16px 40px rgba(122, 63, 53, 0.14);
+            }
+
+            .photo-item:hover img {
+                transform: scale(1.04);
+            }
+
+            .photo-item:hover .photo-overlay {
+                opacity: 1;
+            }
+
+            .photo-item:hover .photo-cap {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* На тач-устройствах показываем caption всегда */
+        @media (hover: none) {
+            .photo-overlay {
+                opacity: 0.6;
+            }
+
+            .photo-cap {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .photo-item img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        .photo-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 40%, rgba(46, 26, 24, 0.55));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .photo-cap {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0.8rem 1rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(0.8rem, 2.5vw, 0.95rem);
+            font-style: italic;
+            color: white;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .photo-upload-slot {
+            break-inside: avoid;
+            margin-bottom: 0.75rem;
+            aspect-ratio: 3/4;
+            background: linear-gradient(135deg, var(--warm), var(--blush));
+            border: 1px dashed var(--rose);
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .photo-upload-slot:hover {
+            background: linear-gradient(135deg, #edddd0, #dfc3b0);
+        }
+
+        .photo-upload-slot .add-icon {
+            font-size: 2rem;
+            opacity: 0.45;
+            color: var(--deep);
+        }
+
+        .photo-upload-slot .add-label {
+            font-size: clamp(0.58rem, 1.5vw, 0.65rem);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--deep);
+            opacity: 0.5;
+            text-align: center;
+            padding: 0 0.5rem;
+        }
+
+        .photo-upload-slot input[type=file] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Горизонтальная полоса фото */
+        .photo-strip {
+            display: flex;
+            gap: 0;
+            overflow: hidden;
+            height: clamp(130px, 25vw, 220px);
+        }
+
+        .photo-strip-item {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            min-width: 0;
+            /* важно для flex-сжатия */
+        }
+
+        .photo-strip-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(.22, 1, .36, 1), filter 0.6s;
+            filter: saturate(0.8);
+        }
+
+        @media (hover: hover) {
+            .photo-strip-item:hover img {
+                transform: scale(1.08);
+                filter: saturate(1.1);
+            }
+
+            .photo-strip-item:hover::after {
+                opacity: 1;
+            }
+        }
+
+        .photo-strip-item::after {
+            content: attr(data-label);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.2rem 1rem 0.8rem;
+            background: linear-gradient(transparent, rgba(46, 26, 24, 0.5));
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(0.72rem, 2vw, 0.85rem);
+            font-style: italic;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Фото в таймлайне */
+        .tl-photo {
+            margin-top: 0.8rem;
+            height: clamp(90px, 20vw, 120px);
+            overflow: hidden;
+            border-radius: 2px;
+            border: 1px solid var(--blush);
+        }
+
+        .tl-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .tl-item:hover .tl-photo img {
+            transform: scale(1.05);
+        }
+
+        /* ═══ КОНВЕРТ ═══ */
+        #letter-section {
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 80%, #ead7c8 0%, transparent 60%),
+                var(--cream);
+        }
+
+        .envelope-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 2.5rem;
+            padding: 0 1rem;
+        }
+
+        .envelope {
+            position: relative;
+            width: min(500px, 100%);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .env-body {
+            background: #fff8f2;
+            border: 1px solid var(--blush);
+            border-radius: 2px;
+            padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1.2rem, 4vw, 2rem);
+            min-height: 160px;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.4s;
+        }
+
+        .envelope:hover .env-body {
+            box-shadow: 0 20px 60px rgba(122, 63, 53, 0.1);
+        }
+
+        .env-flap {
+            width: 100%;
+            height: 50px;
+            background: #f5ede4;
+            border: 1px solid var(--blush);
+            border-bottom: none;
+            border-radius: 2px 2px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--rose);
+            clip-path: polygon(0 100%, 50% 0, 100% 100%);
+            transform-origin: top center;
+            transition: transform 0.6s cubic-bezier(.22, 1, .36, 1), clip-path 0.6s;
+        }
+
+        .envelope.open .env-flap {
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            transform: rotateX(-180deg);
+        }
+
+        .env-hint {
+            text-align: center;
+            font-size: clamp(0.6rem, 1.5vw, 0.65rem);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--blush);
+            margin-top: 1rem;
+            transition: opacity 0.3s;
+        }
+
+        .envelope.open .env-hint {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .letter-content {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 1.2s ease, opacity 0.8s ease 0.4s;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1rem, 3vw, 1.15rem);
+            font-style: italic;
+            line-height: 2;
+            color: var(--ink);
+        }
+
+        .envelope.open .letter-content {
+            max-height: 1000px;
+            opacity: 1;
+        }
+
+        .letter-seal {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--rose);
+            margin-bottom: 1rem;
+        }
+
+        /* ═══ ПРИЧИНЫ ═══ */
+        .reasons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+            gap: 1.2rem;
+            margin-top: 2.5rem;
+            counter-reset: reasons;
+        }
+
+        .reason-card {
+            background: white;
+            border: 1px solid var(--gold-lt);
+            padding: clamp(1.2rem, 3vw, 1.8rem) clamp(1rem, 3vw, 1.6rem);
+            position: relative;
+            transition: transform 0.4s cubic-bezier(.22, 1, .36, 1), box-shadow 0.4s;
+            counter-increment: reasons;
+        }
+
+        @media (hover: hover) {
+            .reason-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 32px rgba(122, 63, 53, 0.07);
+            }
+        }
+
+        .reason-card::before {
+            content: counter(reasons, decimal-leading-zero);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 6vw, 3.5rem);
+            font-weight: 300;
+            color: var(--gold-lt);
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            line-height: 1;
+        }
+
+        .reason-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            line-height: 1.7;
+            color: var(--ink);
+        }
+
+        /* ═══ FOOTER ═══ */
+        footer {
+            text-align: center;
+            padding: clamp(3rem, 8vw, 4rem) 2rem;
+            background: var(--ink);
+            color: var(--blush);
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '♡';
+            font-size: clamp(160px, 40vw, 280px);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.02);
+            line-height: 1;
+        }
+
+        .footer-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 10vw, 5rem);
+            font-weight: 300;
+            font-style: italic;
+            color: white;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .footer-line {
+            width: 60px;
+            height: 1px;
+            background: var(--rose);
+            margin: 1.5rem auto;
+        }
+
+        .footer-sub {
+            font-size: clamp(0.6rem, 2vw, 0.7rem);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--blush);
+            opacity: 0.6;
+        }
+
+        /* ═══ LIGHTBOX ═══ */
+        .lb-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(46, 26, 24, 0.92);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            /* padding чтобы изображение не залезало под нотч/навигацию */
+            padding: env(safe-area-inset-top, 1rem) env(safe-area-inset-right, 1rem) env(safe-area-inset-bottom, 1rem) env(safe-area-inset-left, 1rem);
+        }
+
+        .lb-overlay.active {
+            display: flex;
+        }
+
+        .lb-img {
+            max-width: 90vw;
+            max-height: 80vh;
+            object-fit: contain;
+            border: 1px solid rgba(232, 196, 176, 0.3);
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5);
+        }
+
+        .lb-close {
+            position: absolute;
+            top: max(2rem, env(safe-area-inset-top));
+            right: 2rem;
+            color: var(--blush);
+            font-size: 2.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            /* Крупная зона нажатия для мобильных */
+            padding: 0.5rem;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lb-close:hover {
+            opacity: 1;
+        }
+
+        .lb-cap {
+            position: absolute;
+            bottom: max(2rem, env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            color: var(--blush);
+            font-size: clamp(0.85rem, 2.5vw, 1rem);
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        /* Карта — секция */
+        #map-section {
+            background: var(--warm);
+            padding: clamp(3rem, 8vw, 7rem) clamp(1rem, 5vw, 5rem);
+        }
+
+        #map-section>div {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Разделители */
+        .line-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 clamp(1rem, 5vw, 5rem);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HERO -->
+    <section id="hero">
+        <p class="hero-label">С днём рождения</p>
+        <h1 class="hero-title">
+            Для тебя,<br><em>Соньченыш</em>
+        </h1>
+        <p class="hero-sub">
+            Это твой ну или наш, мною созданый уголочек в большом интернете
+        </p>
+        <div class="hero-divider"></div>
+        <p class="scroll-hint">↓ листай дальше</p>
+    </section>
+
+    <!-- СЧЁТЧИК -->
+    <section id="counter-section">
+        <div class="counter-inner">
+            <p class="section-label reveal">Мы вместе</p>
+            <h2 class="section-title reveal">Каждая <em>секунда</em> у меня на счету</h2>
+            <div class="counter-grid">
+                <div class="counter-card reveal">
+                    <div class="counter-num" id="cnt-years">—</div>
+                    <div class="counter-unit">лет</div>
+                </div>
+                <div class="counter-card reveal">
+                    <div class="counter-num" id="cnt-months">—</div>
+                    <div class="counter-unit">месяцев</div>
+                </div>
+                <div class="counter-card reveal">
+                    <div class="counter-num" id="cnt-days">—</div>
+                    <div class="counter-unit">дней</div>
+                </div>
+                <div class="counter-card reveal">
+                    <div class="counter-num" id="cnt-hours">—</div>
+                    <div class="counter-unit">часов</div>
+                </div>
+                <div class="counter-card reveal">
+                    <div class="counter-num" id="cnt-minutes">—</div>
+                    <div class="counter-unit">минут</div>
+                </div>
+                <div class="counter-card reveal">
+                    <div class="counter-num" id="cnt-seconds">—</div>
+                    <div class="counter-unit">секунд</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <p class="section-label reveal">Циферки нашей истории</p>
+        <h2 class="section-title reveal">Маленькая <em>статистика</em></h2>
+        <div class="stats-grid">
+            <div class="stat-item reveal">
+                <div class="stat-num">∞</div>
+                <div class="stat-label">раз я думал о тебе</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-num">130+</div>
+                <div class="stat-label">поцелуев у нас было</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-num">626</div>
+                <div class="stat-label">добрых утров вместе и столько же ночей</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-num">1543</div>
+                <div class="stat-label">раза мы сказали что любим друг друга</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-num">∞</div>
+                <div class="stat-label">причин любить тебя</div>
+            </div>
+            <div class="stat-item reveal">
+                <div class="stat-num">190+</div>
+                <div class="stat-label">встреч или прогулок</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="line-wrap">
+        <div class="line"></div>
+    </div>
+
+    <!-- ТАЙМЛАЙН -->
+    <section class="section">
+        <p class="section-label reveal">Наша дорога</p>
+        <h2 class="section-title reveal">Моменты, которые <em>я помню</em></h2>
+        <div class="timeline">
+            <div class="tl-item reveal">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-date">Дата 1 — 22.07.2025</div>
+                    <div class="tl-title">Начали общаться</div>
+                    <div class="tl-text">Когда ты мне написала привет, а я даже не знал что ответить </div>
+                </div>
+            </div>
+            <div class="tl-item reveal">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-date">Дата 2 — 25.07.2025</div>
+                    <div class="tl-title">Начали встречатся</div>
+                    <div class="tl-text">Когда ты мне предложила встречаться ночью и отключила телефон</div>
+                </div>
+            </div>
+            <div class="tl-item reveal">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-date">Дата 3 — 26.07.2025</div>
+                    <div class="tl-title">Первая Встреча</div>
+                    <div class="tl-text">Момент, когда вы стояли с Дашей напротив школы под деревом во время дождя а я
+                        пришел к вам чтобы тебя увидеть</div>
+                </div>
+            </div>
+            <div class="tl-item reveal">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-date">Дата 4 — 27.07.2025</div>
+                    <div class="tl-title">Первое свидание </div>
+                    <div class="tl-text">Когда мы пошли гулять в лес и не знали что делать пошли просто через деревья, а
+                        после того еще и встретили оленя и заблудились. А потом и первая наша обнимашка</div>
+                </div>
+            </div>
+
+            <div class="tl-item reveal">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-date">Дата 5 - 04.09.2025</div>
+                    <div class="tl-title">Первый раз пошли за руки</div>
+                    <div class="tl-text">В тот день было еще жарко и когда я провожал тебя домой, и тогда мы пошли
+                        за руку</div>
+                </div>
+            </div>
+            <div class="tl-item reveal">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-date">Дата 6 - 04.11.2025</div>
+                    <div class="tl-title">Первый поцелуй</div>
+                    <div class="tl-text">Когда ты еще выкинула свой телеыон, я тебя бесил и ты начала бежать за мной и
+                        душить под дождем</div>
+                </div>
+            </div>
+            <div class="tl-item reveal">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-date">Дата 7 - 14.01.2025</div>
+                    <div class="tl-title">Первый раз мы вместе плакали</div>
+                    <div class="tl-text">Когда я еще должен был уехать и должны была быть последняя встреча</div>
+                </div>
+            </div>
+            <div class="tl-item reveal">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-date">Дата 8 - 14.02.2026</div>
+                    <div class="tl-title">Наше первое 14 февраля</div>
+                    <div class="tl-text">Когда я заболел а ты приехала ко мне под дождем и мы обменялись подарками</div>
+                </div>
+            </div>
+            <div class="tl-item reveal">
+                <div class="tl-dot"></div>
+                <div class="tl-content">
+                    <div class="tl-date">Ну а сегодня, если ты открыла коробочку тогда когда надо значит 30.07</div>
+                    <div class="tl-title">Твой день рождения 🎂</div>
+                    <div class="tl-text">Когда я пишу я сам незнаю если буду или не буду но все равно. Поздавляю тебя с
+                        твоими целыми 14 годиками, но факта что ты мелочь это не отменяет</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="line-wrap">
+        <div class="line"></div>
+    </div>
+
+    <!-- КАРТА -->
+    <section id="map-section">
+        <div>
+            <p class="section-label reveal">Наша география</p>
+            <h2 class="section-title reveal">Места, где <em>что-то случилось</em></h2>
+            <div class="map-pins reveal" id="map-pins">
+                <div class="pin" data-idx="0"><span class="pin-emoji">📍</span><span class="pin-name">Место
+                        1</span><span style="font-size:0.68rem;color:var(--blush);margin-left:4px">— первая
+                        встреча</span></div>
+                <div class="pin" data-idx="1"><span class="pin-emoji">❤️</span><span class="pin-name">Место
+                        2</span><span style="font-size:0.68rem;color:var(--blush);margin-left:4px">— первое
+                        свидание</span></div>
+                <div class="pin" data-idx="2"><span class="pin-emoji">🤗</span><span class="pin-name">Место
+                        3</span><span style="font-size:0.68rem;color:var(--blush);margin-left:4px">- первая обнимашка</span>
+                </div>
+                <div class="pin" data-idx="3"><span class="pin-emoji">🫶</span><span class="pin-name">Место
+                        4</span><span style="font-size:0.68rem;color:var(--blush);margin-left:4px">— первый раз пошли за руки</span>
+                </div>
+                <div class="pin" data-idx="4"><span class="pin-emoji">💋</span><span class="pin-name">Место
+                        5</span><span style="font-size:0.68rem;color:var(--blush);margin-left:4px">— первый поцелуй</span></div>
+                <div class="pin" data-idx="5">
+                    <span class="pin-emoji">🫂</span>
+                    <span class="pin-name">Место 6</span>
+                    <span style="font-size:0.68rem;color:var(--blush);margin-left:4px">— первый раз мы вместе плакали</span>
+                </div>
+                <div class="pin" data-idx="6">
+                    <span class="pin-emoji">🌅</span>
+                    <span class="pin-name">Место 7</span>
+                    <span style="font-size:0.68rem;color:var(--blush);margin-left:4px">— первый наш закат</span>
+                </div>
+                <div class="pin" data-idx="7">
+                    <span class="pin-emoji">📷</span>
+                    <span class="pin-name">Место 8</span>
+                    <span style="font-size:0.68rem;color:var(--blush);margin-left:4px">— первая наша фотка</span>
+                </div>
+
+
+            </div>
+            <div class="map-wrap reveal">
+                <div id="leaflet-map"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="line-wrap">
+        <div class="line"></div>
+    </div>
+
+    <!-- ФОТОГАЛЕРЕЯ -->
+    <section class="section">
+        <p class="section-label reveal">Снимки</p>
+        <h2 class="section-title reveal">Наши <em>моменты</em></h2>
+        <div class="photo-masonry reveal">
+            <div class="photo-item" onclick="openLB(this)">
+                <img src=""
+                    alt="Первый совместный вечер" loading="lazy">
+                <div class="photo-overlay"></div>
+                <div class="photo-cap">Первый совместный вечер</div>
+            </div>
+            <div class="photo-item" onclick="openLB(this)">
+                <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&auto=format&fit=crop&q=80"
+                    alt="Наша поездка" loading="lazy">
+                <div class="photo-overlay"></div>
+                <div class="photo-cap">Наша поездка</div>
+            </div>
+            <div class="photo-item" onclick="openLB(this)">
+                <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=800&auto=format&fit=crop&q=80"
+                    alt="Просто мы" loading="lazy">
+                <div class="photo-overlay"></div>
+                <div class="photo-cap">Просто мы</div>
+            </div>
+            <div class="photo-item" onclick="openLB(this)">
+                <img src="https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=800&auto=format&fit=crop&q=80"
+                    alt="Мой любимый момент" loading="lazy">
+                <div class="photo-overlay"></div>
+                <div class="photo-cap">Мой любимый момент</div>
+            </div>
+            <div class="photo-item" onclick="openLB(this)">
+                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80"
+                    alt="Счастливые" loading="lazy">
+                <div class="photo-overlay"></div>
+                <div class="photo-cap">Счастливые</div>
+            </div>
+            <div class="photo-item" onclick="openLB(this)">
+                <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80"
+                    alt="Наше место" loading="lazy">
+                <div class="photo-overlay"></div>
+                <div class="photo-cap">Наше место</div>
+            </div>
+            <div class="photo-item" onclick="openLB(this)">
+                <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=800&auto=format&fit=crop&q=80"
+                    alt="Утро вместе" loading="lazy">
+                <div class="photo-overlay"></div>
+                <div class="photo-cap">Утро вместе</div>
+            </div>
+            <div class="photo-item" onclick="openLB(this)">
+                <img src="https://images.unsplash.com/photo-1489659831163-682b5af42225?w=800&auto=format&fit=crop&q=80"
+                    alt="Вечерний свет" loading="lazy">
+                <div class="photo-overlay"></div>
+                <div class="photo-cap">Вечерний свет</div>
+            </div>
+            <div class="photo-upload-slot">
+                <span class="add-icon">＋</span>
+                <span class="add-label">добавить фото</span>
+                <input type="file" accept="image/*" onchange="addUploadedPhoto(this)">
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lb-overlay" id="lb" onclick="closeLB(event)">
+        <button class="lb-close" onclick="closeLB()" aria-label="Закрыть">×</button>
+        <img class="lb-img" id="lb-img" src="" alt="">
+        <div class="lb-cap" id="lb-cap"></div>
+    </div>
+
+    <div class="line-wrap">
+        <div class="line"></div>
+    </div>
+
+    <!-- КОНВЕРТ -->
+    <section id="letter-section" class="section">
+        <p class="section-label reveal">Только для тебя</p>
+        <h2 class="section-title reveal">Открой <em>конверт</em></h2>
+        <div class="envelope-wrap reveal">
+            <div class="envelope" id="envelope" onclick="this.classList.toggle('open')">
+                <div class="env-flap">♡</div>
+                <div class="env-body">
+                    <div class="letter-content">
+                        <div class="letter-seal">♡</div>
+                        <p>Сонька,</p><br>
+                        <p>Это уже второе твое, наше совместное день рождения, и я хотел тебе сказать что люблю тебя, этот сайт будет тебе напоминаем чтоб ничего не забывала</p><br>
+                        <p>Сегодня тебе целых 14 годиков, новые возможности да и вообще класный день, который я хотел провести вместе если все таки выйдет. А так поздравля тебя, желаю всего самого лучшего, перерости меня чтобы я тебя не обижал и вообщем все что хочешь</p><br>
+                        <p>С днём рождения, мой маленький котенок.</p><br>
+                        <p style="text-align:right;font-size:1.05rem">С любовью, всегда — <em>твоя пенсия</em> ♡</p>
+                    </div>
+                </div>
+                <p class="env-hint">нажми, чтобы открыть</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="line-wrap">
+        <div class="line"></div>
+    </div>
+
+    <!-- ПРИЧИНЫ -->
+    <section class="section">
+        <p class="section-label reveal">Список</p>
+        <h2 class="section-title reveal">Причины, почему <em>я тебя люблю</em></h2>
+        <div class="reasons-grid">
+            <div class="reason-card reveal">
+                <p class="reason-text">Потому что когда ты смеёшься — хочется остановить время и просто смотреть.</p>
+            </div>
+            <div class="reason-card reveal">
+                <p class="reason-text">Потому что ты умеешь молчать так, что становится тепло.</p>
+            </div>
+            <div class="reason-card reveal">
+                <p class="reason-text">Потому что ты всегда знаешь, что сказать — и когда лучше промолчать.</p>
+            </div>
+            <div class="reason-card reveal">
+                <p class="reason-text">Потому что рядом с тобой я становлюсь чуть лучшей версией себя.</p>
+            </div>
+            <div class="reason-card reveal">
+                <p class="reason-text">Потому что ты — это дом. Вне зависимости от места.</p>
+            </div>
+            <div class="reason-card reveal">
+                <p class="reason-text">Потому что ты существуешь. И этого уже достаточно.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-name">Сонька</div>
+        <div class="footer-line"></div>
+        <p class="footer-sub">Сильно сильно люблю тебя мелочь</p>
+    </footer>
+
+    <script>
+        const START_DATE = new Date(2025, 7, 25);
+
+        const MAP_POINTS = [
+            { lat: 49.736091, lng: 13.364585, emoji: '📍', title: 'Место 1', desc: 'Первая встреча', color: '#c97b6a' },
+            { lat: 49.720794, lng: 13.359752, emoji: '❤️', title: 'Место 2', desc: 'Первое свидание', color: '#c97b6a' },
+            { lat: 49.741065, lng: 13.365554, emoji: '🤗', title: 'Место 3', desc: 'Первая обмнимашка', color: '#c9a96e' },
+            { lat: 49.730112, lng: 13.356269, emoji: '🫶', title: 'Место 4', desc: 'Первый раз пошли за руки', color: '#c9a96e' },
+            { lat: 49.741170, lng: 13.364591, emoji: '💋', title: 'Место 5', desc: 'Первый поцелуй', color: '#c97b6a' },
+            { lat: 49.720374, lng: 13.355429, emoji: '🫂', title: 'Место 6', desc: 'Первый раз мы вместе плакали', color: '#c97b6a' },
+            { lat: 49.719949, lng: 13.352415, emoji: '🌅', title: 'Место 7', desc: 'Первый наш закат', color: '#c97b6a' },
+            { lat: 49.720501, lng: 13.352693, emoji: '📷', title: 'Место 8', desc: 'Первая наша фотка', color: '#c97b6a' },
+
+        ];
+
+        /* Счётчик */
+        function updateCounter() {
+            const now = new Date();
+            let years = now.getFullYear() - START_DATE.getFullYear();
+            let months = now.getMonth() - START_DATE.getMonth();
+            if (months < 0) { years--; months += 12; }
+            const temp = new Date(START_DATE);
+            temp.setFullYear(temp.getFullYear() + years);
+            temp.setMonth(temp.getMonth() + months);
+            const days = Math.floor((now - temp) / 864e5);
+            document.getElementById('cnt-years').textContent = years;
+            document.getElementById('cnt-months').textContent = months;
+            document.getElementById('cnt-days').textContent = days;
+            document.getElementById('cnt-hours').textContent = String(now.getHours()).padStart(2, '0');
+            document.getElementById('cnt-minutes').textContent = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('cnt-seconds').textContent = String(now.getSeconds()).padStart(2, '0');
+        }
+        updateCounter();
+        setInterval(updateCounter, 1000);
+
+        /* Показать 5-й слайд на широких экранах */
+        if (window.innerWidth >= 600) {
+            const extra = document.getElementById('strip-extra');
+            if (extra) extra.style.display = '';
+        }
+
+        /* Reveal */
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (!e.isIntersecting) return;
+                e.target.classList.add('visible');
+                e.target.querySelectorAll('.reveal').forEach((el, i) =>
+                    setTimeout(() => el.classList.add('visible'), i * 100)
+                );
+            });
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        /* Карта */
+        let leafletMap, leafletMarkers = [];
+        function initMap() {
+            leafletMap = L.map('leaflet-map', {
+                center: [49.722, 13.358],
+                zoom: 14,
+                zoomControl: true,
+                scrollWheelZoom: false,
+                tap: false, /* fix для iOS Safari */
+            });
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap © CARTO',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(leafletMap);
+
+            MAP_POINTS.forEach((pt, i) => {
+                const icon = L.divIcon({
+                    className: '',
+                    html: `<div style="background:${pt.color};border:3px solid white;border-radius:50%;width:22px;height:22px;box-shadow:0 2px 10px rgba(122,63,53,0.45);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;">${pt.emoji}</div>`,
+                    iconSize: [22, 22], iconAnchor: [11, 11],
+                });
+                const marker = L.marker([pt.lat, pt.lng], { icon })
+                    .addTo(leafletMap)
+                    .bindPopup(`<div class="popup-title">${pt.emoji} ${pt.title}</div><div class="popup-desc">${pt.desc}</div>`, { maxWidth: 200 });
+                leafletMarkers.push(marker);
+            });
+
+            document.querySelectorAll('#map-pins .pin').forEach(pin => {
+                pin.addEventListener('click', () => {
+                    const idx = parseInt(pin.dataset.idx);
+                    const pt = MAP_POINTS[idx];
+                    leafletMap.flyTo([pt.lat, pt.lng], 16, { duration: 1.2 });
+                    setTimeout(() => leafletMarkers[idx].openPopup(), 1200);
+                });
+            });
+        }
+        const mapObs = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) { initMap(); mapObs.disconnect(); }
+        }, { threshold: 0.05 });
+        mapObs.observe(document.getElementById('leaflet-map'));
+
+        /* Lightbox */
+        function openLB(el) {
+            const img = el.querySelector('img');
+            const cap = el.querySelector('.photo-cap');
+            document.getElementById('lb-img').src = img.src;
+            document.getElementById('lb-cap').textContent = cap ? cap.textContent.trim() : '';
+            document.getElementById('lb').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLB(e) {
+            if (e && e.target !== document.getElementById('lb') && !e.target.classList.contains('lb-close')) return;
+            document.getElementById('lb').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeLB({ target: document.getElementById('lb') });
+        });
+
+        /* Свайп для закрытия lightbox на мобильных */
+        let touchStartY = 0;
+        document.getElementById('lb').addEventListener('touchstart', e => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        document.getElementById('lb').addEventListener('touchend', e => {
+            if (Math.abs(e.changedTouches[0].clientY - touchStartY) > 60) {
+                closeLB({ target: document.getElementById('lb') });
+            }
+        }, { passive: true });
+
+        /* Загрузка фото */
+        function addUploadedPhoto(input) {
+            if (!input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const slot = input.closest('.photo-upload-slot');
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                item.onclick = function () { openLB(this); };
+                item.innerHTML = `
+      <img src="${e.target.result}" alt="твоё фото">
+      <div class="photo-overlay"></div>
+      <div class="photo-cap">твоё фото</div>
+    `;
+                slot.parentNode.insertBefore(item, slot);
+                input.value = '';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    </script>
+</body>
+
+</html>
